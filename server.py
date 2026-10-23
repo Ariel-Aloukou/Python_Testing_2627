@@ -189,9 +189,16 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         ), 403
-    competition = find_competition_by_name(
-        request.form.get('competition')
-    )
+    competition_name = request.form.get('competition')
+    places_value = request.form.get('places')
+    if not competition_name or not places_value:
+        flash("Les champs du formulaire sont incomplets.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        )
+    competition = find_competition_by_name(competition_name)
     if competition is None:
         abort(404)
     if is_competition_past(competition):
@@ -201,7 +208,7 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
-    placesRequired, places_error = parse_places(request.form['places'])
+    placesRequired, places_error = parse_places(places_value)
     if places_error:
         flash(places_error)
         return render_template(

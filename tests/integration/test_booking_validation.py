@@ -21,3 +21,63 @@ def test_non_numeric_places_are_refused(simply_lift_client):
         "Simply Lift",
         "Spring Festival",
     ) == 0
+
+
+def test_missing_places_are_refused(simply_lift_client):
+    response = simply_lift_client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+        },
+    )
+
+    assert response.status_code == 200
+    assert "Les champs du formulaire sont incomplets." in (
+        response.get_data(as_text=True)
+    )
+    assert server.clubs[0]["points"] == "13"
+    assert server.competitions[0]["numberOfPlaces"] == "25"
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Spring Festival",
+    ) == 0
+
+
+def test_missing_competition_is_refused(simply_lift_client):
+    response = simply_lift_client.post(
+        "/purchasePlaces",
+        data={
+            "club": "Simply Lift",
+            "places": "1",
+        },
+    )
+
+    assert response.status_code == 200
+    assert "Les champs du formulaire sont incomplets." in (
+        response.get_data(as_text=True)
+    )
+    assert server.clubs[0]["points"] == "13"
+    assert server.competitions[0]["numberOfPlaces"] == "25"
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Spring Festival",
+    ) == 0
+
+
+def test_empty_places_are_refused(simply_lift_client):
+    response = simply_lift_client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "",
+        },
+    )
+
+    assert response.status_code == 200
+    assert "Les champs du formulaire sont incomplets." in (
+        response.get_data(as_text=True)
+    )
+    assert server.clubs[0]["points"] == "13"
+    assert server.competitions[0]["numberOfPlaces"] == "25"
