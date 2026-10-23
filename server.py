@@ -121,15 +121,15 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
-    if not debit_club_points(club, placesRequired):
-        flash("Solde de points insuffisant pour cette réservation.")
+    if placesRequired > int(competition['numberOfPlaces']):
+        flash("Capacité insuffisante pour cette réservation.")
         return render_template(
             'welcome.html',
             club=club,
             competitions=competitions,
         )
-    if placesRequired > int(competition['numberOfPlaces']):
-        flash("Capacité insuffisante pour cette réservation.")
+    if not debit_club_points(club, placesRequired):
+        flash("Solde de points insuffisant pour cette réservation.")
         return render_template(
             'welcome.html',
             club=club,

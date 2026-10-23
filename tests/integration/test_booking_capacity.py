@@ -51,3 +51,24 @@ def test_negative_places_are_refused(client):
         "Simply Lift",
         "Spring Festival",
     ) == 0
+
+
+def test_capacity_is_validated_before_points_are_debited(client):
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Small Festival",
+            "club": "Simply Lift",
+            "places": "6",
+        },
+    )
+
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert "Capacité insuffisante" in html
+    assert server.clubs[0]["points"] == "13"
+    assert server.competitions[2]["numberOfPlaces"] == "5"
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Small Festival",
+    ) == 0
