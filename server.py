@@ -63,6 +63,7 @@ def decrement_competition_places(competition, places):
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
+app.jinja_env.globals['is_competition_past'] = is_competition_past
 
 competitions = loadCompetitions()
 clubs = loadClubs()
@@ -96,6 +97,13 @@ def showSummary():
 def book(competition, club):
     foundClub = [c for c in clubs if c['name'] == club][0]
     foundCompetition = [c for c in competitions if c['name'] == competition][0]
+    if is_competition_past(foundCompetition):
+        flash("Cette compétition est passée.")
+        return render_template(
+            'welcome.html',
+            club=foundClub,
+            competitions=competitions,
+        )
     if foundClub and foundCompetition:
         return render_template(
             'booking.html',
