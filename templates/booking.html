@@ -6,6 +6,7 @@
 </head>
 <body>
     <h2>{{competition['name']}}</h2>
+    {% include '_messages.html' %}
     Places available: {{competition['numberOfPlaces']}}
     <form action="/purchasePlaces" method="post">
         <input type="hidden" name="club" value="{{club['name']}}">

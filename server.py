@@ -116,6 +116,14 @@ def render_login_required():
     ), 401
 
 
+def flash_error(message):
+    flash(message, 'error')
+
+
+def flash_success(message):
+    flash(message, 'success')
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 app.jinja_env.globals['is_competition_past'] = is_competition_past
@@ -161,14 +169,14 @@ def book(competition, club):
     if logged_in_club is None:
         return render_login_required()
     if logged_in_club['name'] != foundClub['name']:
-        flash("Accès non autorisé pour ce club.")
+        flash_error("Accès non autorisé pour ce club.")
         return render_template(
             'welcome.html',
             club=logged_in_club,
             competitions=competitions,
         ), 403
     if is_competition_past(foundCompetition):
-        flash("Cette compétition est passée.")
+        flash_error("Cette compétition est passée.")
         return render_template(
             'welcome.html',
             club=foundClub,
@@ -188,7 +196,7 @@ def purchasePlaces():
         return render_login_required()
     submitted_club = request.form.get('club')
     if submitted_club and submitted_club != club['name']:
-        flash("Accès non autorisé pour ce club.")
+        flash_error("Accès non autorisé pour ce club.")
         return render_template(
             'welcome.html',
             club=club,
@@ -197,7 +205,7 @@ def purchasePlaces():
     competition_name = request.form.get('competition')
     places_value = request.form.get('places')
     if not competition_name or not places_value:
-        flash("Les champs du formulaire sont incomplets.")
+        flash_error("Les champs du formulaire sont incomplets.")
         return render_template(
             'welcome.html',
             club=club,
@@ -207,7 +215,7 @@ def purchasePlaces():
     if competition is None:
         abort(404)
     if is_competition_past(competition):
-        flash("Cette compétition est passée.")
+        flash_error("Cette compétition est passée.")
         return render_template(
             'welcome.html',
             club=club,
@@ -215,7 +223,7 @@ def purchasePlaces():
         )
     placesRequired, places_error = parse_places(places_value)
     if places_error:
-        flash(places_error)
+        flash_error(places_error)
         return render_template(
             'welcome.html',
             club=club,
@@ -223,21 +231,21 @@ def purchasePlaces():
         )
     booked_places = get_booked_places(club['name'], competition['name'])
     if booked_places + placesRequired > MAX_PLACES_PER_COMPETITION:
-        flash("La limite de 12 places par compétition est dépassée.")
+        flash_error("La limite de 12 places par compétition est dépassée.")
         return render_template(
             'welcome.html',
             club=club,
             competitions=competitions,
         )
     if placesRequired > int(competition['numberOfPlaces']):
-        flash("Capacité insuffisante pour cette réservation.")
+        flash_error("Capacité insuffisante pour cette réservation.")
         return render_template(
             'welcome.html',
             club=club,
             competitions=competitions,
         )
     if not debit_club_points(club, placesRequired):
-        flash("Solde de points insuffisant pour cette réservation.")
+        flash_error("Solde de points insuffisant pour cette réservation.")
         return render_template(
             'welcome.html',
             club=club,
@@ -247,7 +255,11 @@ def purchasePlaces():
     bookings[(club['name'], competition['name'])] = (
         booked_places + placesRequired
     )
-    flash('Great-booking complete!')
+    place_word = "place" if placesRequired == 1 else "places"
+    flash_success(
+        f"Réservation confirmée : {placesRequired} {place_word} "
+        f"pour {competition['name']}."
+    )
     return render_template(
         'welcome.html',
         club=club,
