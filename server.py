@@ -1,6 +1,9 @@
 import json
+import os
+import threading
 
 from datetime import datetime
+from functools import wraps
 
 from flask import (
     Flask,
@@ -16,18 +19,70 @@ from flask import (
 
 MAX_PLACES_PER_COMPETITION = 12
 COMPETITION_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+CLUBS_FILE = 'clubs.json'
+COMPETITIONS_FILE = 'competitions.json'
+BOOKINGS_FILE = 'bookings.json'
+DATA_LOCK = threading.RLock()
+
+
+def serialized(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with DATA_LOCK:
+            return func(*args, **kwargs)
+    return wrapper
 
 
 def loadClubs():
-    with open('clubs.json') as c:
+    with open(CLUBS_FILE) as c:
         listOfClubs = json.load(c)['clubs']
         return listOfClubs
 
 
 def loadCompetitions():
-    with open('competitions.json') as comps:
+    with open(COMPETITIONS_FILE) as comps:
         listOfCompetitions = json.load(comps)['competitions']
         return listOfCompetitions
+
+
+def loadBookings():
+    try:
+        with open(BOOKINGS_FILE) as b:
+            listOfBookings = json.load(b)['bookings']
+    except FileNotFoundError:
+        return {}
+    return {
+        (booking['club'], booking['competition']): int(booking['places'])
+        for booking in listOfBookings
+    }
+
+
+def writeJson(path, payload):
+    temporary_path = f"{path}.tmp"
+    with open(temporary_path, 'w') as file:
+        json.dump(payload, file, indent=4)
+    os.replace(temporary_path, path)
+
+
+def saveBookings():
+    payload = {
+        'bookings': [
+            {
+                'club': club_name,
+                'competition': competition_name,
+                'places': places,
+            }
+            for (club_name, competition_name), places in bookings.items()
+        ]
+    }
+    writeJson(BOOKINGS_FILE, payload)
+
+
+def saveData():
+    with DATA_LOCK:
+        writeJson(CLUBS_FILE, {'clubs': clubs})
+        writeJson(COMPETITIONS_FILE, {'competitions': competitions})
+        saveBookings()
 
 
 def normalize_email(email):
@@ -130,7 +185,7 @@ app.jinja_env.globals['is_competition_past'] = is_competition_past
 
 competitions = loadCompetitions()
 clubs = loadClubs()
-bookings = {}
+bookings = loadBookings()
 
 
 @app.route('/')
@@ -199,6 +254,7 @@ def book(competition, club):
 
 
 @app.route('/purchasePlaces', methods=['POST'])
+@serialized
 def purchasePlaces():
     club = get_logged_in_club()
     if club is None:
@@ -264,6 +320,7 @@ def purchasePlaces():
     bookings[(club['name'], competition['name'])] = (
         booked_places + placesRequired
     )
+    saveData()
     place_word = "place" if placesRequired == 1 else "places"
     flash_success(
         f"Réservation confirmée : {placesRequired} {place_word} "
