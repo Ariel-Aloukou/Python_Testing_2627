@@ -64,10 +64,25 @@ def sample_competitions():
 
 
 @pytest.fixture
-def app(monkeypatch, sample_clubs, sample_competitions):
+def app(monkeypatch, sample_clubs, sample_competitions, tmp_path):
     monkeypatch.setattr(server_module, "clubs", sample_clubs)
     monkeypatch.setattr(server_module, "competitions", sample_competitions)
     monkeypatch.setattr(server_module, "bookings", {})
+    monkeypatch.setattr(
+        server_module,
+        "CLUBS_FILE",
+        tmp_path / "clubs.json",
+    )
+    monkeypatch.setattr(
+        server_module,
+        "COMPETITIONS_FILE",
+        tmp_path / "competitions.json",
+    )
+    monkeypatch.setattr(
+        server_module,
+        "BOOKINGS_FILE",
+        tmp_path / "bookings.json",
+    )
     server_module.app.config.update(
         TESTING=True,
         SECRET_KEY="test-secret-key",

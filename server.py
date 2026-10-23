@@ -16,18 +16,56 @@ from flask import (
 
 MAX_PLACES_PER_COMPETITION = 12
 COMPETITION_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+CLUBS_FILE = 'clubs.json'
+COMPETITIONS_FILE = 'competitions.json'
+BOOKINGS_FILE = 'bookings.json'
 
 
 def loadClubs():
-    with open('clubs.json') as c:
+    with open(CLUBS_FILE) as c:
         listOfClubs = json.load(c)['clubs']
         return listOfClubs
 
 
 def loadCompetitions():
-    with open('competitions.json') as comps:
+    with open(COMPETITIONS_FILE) as comps:
         listOfCompetitions = json.load(comps)['competitions']
         return listOfCompetitions
+
+
+def loadBookings():
+    try:
+        with open(BOOKINGS_FILE) as b:
+            listOfBookings = json.load(b)['bookings']
+    except FileNotFoundError:
+        return {}
+    return {
+        (booking['club'], booking['competition']): int(booking['places'])
+        for booking in listOfBookings
+    }
+
+
+def saveBookings():
+    payload = {
+        'bookings': [
+            {
+                'club': club_name,
+                'competition': competition_name,
+                'places': places,
+            }
+            for (club_name, competition_name), places in bookings.items()
+        ]
+    }
+    with open(BOOKINGS_FILE, 'w') as b:
+        json.dump(payload, b, indent=4)
+
+
+def saveData():
+    with open(CLUBS_FILE, 'w') as c:
+        json.dump({'clubs': clubs}, c, indent=4)
+    with open(COMPETITIONS_FILE, 'w') as comps:
+        json.dump({'competitions': competitions}, comps, indent=4)
+    saveBookings()
 
 
 def normalize_email(email):
@@ -130,7 +168,7 @@ app.jinja_env.globals['is_competition_past'] = is_competition_past
 
 competitions = loadCompetitions()
 clubs = loadClubs()
-bookings = {}
+bookings = loadBookings()
 
 
 @app.route('/')
@@ -264,6 +302,7 @@ def purchasePlaces():
     bookings[(club['name'], competition['name'])] = (
         booked_places + placesRequired
     )
+    saveData()
     place_word = "place" if placesRequired == 1 else "places"
     flash_success(
         f"Réservation confirmée : {placesRequired} {place_word} "
