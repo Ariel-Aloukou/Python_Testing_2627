@@ -140,15 +140,11 @@ def index():
 
 @app.route('/points')
 def points():
-    return {
-        'clubs': [
-            {
-                'name': club['name'],
-                'points': int(club['points']),
-            }
-            for club in clubs
-        ]
-    }
+    sorted_clubs = sorted(
+        clubs,
+        key=lambda club: (-int(club['points']), club['name']),
+    )
+    return render_template('points.html', clubs=sorted_clubs)
 
 
 @app.route('/showSummary', methods=['POST'])
