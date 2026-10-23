@@ -45,3 +45,13 @@ def test_email_is_trimmed_and_case_insensitive(client):
 
     assert response.status_code == 200
     assert b"Welcome, john@simplylift.co" in response.data
+
+
+def test_login_form_has_native_email_validation(client):
+    response = client.get("/")
+    html = response.get_data(as_text=True)
+
+    assert 'type="email"' in html
+    assert 'id="email"' in html
+    assert "required" in html
+    assert 'autocomplete="email"' in html
