@@ -294,9 +294,8 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
-    booked_places = get_booked_places(club['name'], competition['name'])
-    if booked_places + placesRequired > MAX_PLACES_PER_COMPETITION:
-        flash_error("La limite de 12 places par compétition est dépassée.")
+    if (club['name'], competition['name']) in bookings:
+        flash_error("Vous avez déjà réservé cette compétition.")
         return render_template(
             'welcome.html',
             club=club,
@@ -317,9 +316,7 @@ def purchasePlaces():
             competitions=competitions,
         )
     decrement_competition_places(competition, placesRequired)
-    bookings[(club['name'], competition['name'])] = (
-        booked_places + placesRequired
-    )
+    bookings[(club['name'], competition['name'])] = placesRequired
     saveData()
     place_word = "place" if placesRequired == 1 else "places"
     flash_success(

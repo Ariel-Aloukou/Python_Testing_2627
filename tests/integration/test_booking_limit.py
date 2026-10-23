@@ -39,7 +39,7 @@ def test_booking_exactly_12_places_is_accepted(simply_lift_client):
     assert server.competitions[0]["numberOfPlaces"] == 13
 
 
-def test_booking_limit_is_cumulative_for_a_club_and_competition(simply_lift_client):
+def test_second_booking_for_same_competition_is_refused(simply_lift_client):
     first = simply_lift_client.post(
         "/purchasePlaces",
         data={
@@ -53,31 +53,24 @@ def test_booking_limit_is_cumulative_for_a_club_and_competition(simply_lift_clie
         data={
             "competition": "Spring Festival",
             "club": "Simply Lift",
-            "places": "6",
-        },
-    )
-    third = simply_lift_client.post(
-        "/purchasePlaces",
-        data={
-            "competition": "Spring Festival",
-            "club": "Simply Lift",
             "places": "1",
         },
     )
 
     assert first.status_code == 200
     assert second.status_code == 200
-    assert third.status_code == 200
-    assert b"limite de 12 places" in third.data
-    assert server.clubs[0]["points"] == "1"
-    assert server.competitions[0]["numberOfPlaces"] == 13
+    assert "Vous avez déjà réservé cette compétition." in (
+        second.get_data(as_text=True)
+    )
+    assert server.clubs[0]["points"] == "7"
+    assert server.competitions[0]["numberOfPlaces"] == 19
     assert server.get_booked_places(
         "Simply Lift",
         "Spring Festival",
-    ) == 12
+    ) == 6
 
 
-def test_refused_cumulative_booking_is_not_recorded(simply_lift_client):
+def test_refused_duplicate_booking_is_not_recorded(simply_lift_client):
     simply_lift_client.post(
         "/purchasePlaces",
         data={
@@ -97,30 +90,15 @@ def test_refused_cumulative_booking_is_not_recorded(simply_lift_client):
     )
 
     assert refused.status_code == 200
-    assert b"limite de 12 places" in refused.data
+    assert "Vous avez déjà réservé cette compétition." in (
+        refused.get_data(as_text=True)
+    )
     assert server.clubs[0]["points"] == "7"
     assert server.competitions[0]["numberOfPlaces"] == 19
     assert server.get_booked_places(
         "Simply Lift",
         "Spring Festival",
     ) == 6
-
-    accepted = simply_lift_client.post(
-        "/purchasePlaces",
-        data={
-            "competition": "Spring Festival",
-            "club": "Simply Lift",
-            "places": "6",
-        },
-    )
-
-    assert accepted.status_code == 200
-    assert server.clubs[0]["points"] == "1"
-    assert server.competitions[0]["numberOfPlaces"] == 13
-    assert server.get_booked_places(
-        "Simply Lift",
-        "Spring Festival",
-    ) == 12
 
 
 def test_booking_limit_is_per_club(simply_lift_client):
