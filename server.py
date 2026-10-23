@@ -255,7 +255,11 @@ def purchasePlaces():
     bookings[(club['name'], competition['name'])] = (
         booked_places + placesRequired
     )
-    flash_success('Great-booking complete!')
+    place_word = "place" if placesRequired == 1 else "places"
+    flash_success(
+        f"Réservation confirmée : {placesRequired} {place_word} "
+        f"pour {competition['name']}."
+    )
     return render_template(
         'welcome.html',
         club=club,
