@@ -67,6 +67,13 @@ def find_competition_by_name(competition_name):
     return None
 
 
+def parse_places(value):
+    places = int(value)
+    if places < 1:
+        return None, "Le nombre de places doit être au moins 1."
+    return places, None
+
+
 def debit_club_points(club, places):
     current_points = int(club['points'])
     if current_points < places:
@@ -191,9 +198,9 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
-    placesRequired = int(request.form['places'])
-    if placesRequired < 1:
-        flash("Le nombre de places doit être au moins 1.")
+    placesRequired, places_error = parse_places(request.form['places'])
+    if places_error:
+        flash(places_error)
         return render_template(
             'welcome.html',
             club=club,
