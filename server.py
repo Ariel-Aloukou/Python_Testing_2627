@@ -138,6 +138,19 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/points')
+def points():
+    return {
+        'clubs': [
+            {
+                'name': club['name'],
+                'points': int(club['points']),
+            }
+            for club in clubs
+        ]
+    }
+
+
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
     email = request.form.get('email', '')
