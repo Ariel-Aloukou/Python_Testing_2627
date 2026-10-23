@@ -44,6 +44,11 @@ def get_booked_places(club_name, competition_name):
     return bookings.get((club_name, competition_name), 0)
 
 
+def decrement_competition_places(competition, places):
+    remaining_places = int(competition['numberOfPlaces']) - places
+    competition['numberOfPlaces'] = max(0, remaining_places)
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
@@ -101,9 +106,23 @@ def purchasePlaces():
     ][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
+    if placesRequired < 1:
+        flash("Le nombre de places doit être au moins 1.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        )
     booked_places = get_booked_places(club['name'], competition['name'])
     if booked_places + placesRequired > MAX_PLACES_PER_COMPETITION:
         flash("La limite de 12 places par compétition est dépassée.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        )
+    if placesRequired > int(competition['numberOfPlaces']):
+        flash("Capacité insuffisante pour cette réservation.")
         return render_template(
             'welcome.html',
             club=club,
@@ -116,9 +135,7 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
-    competition['numberOfPlaces'] = (
-        int(competition['numberOfPlaces']) - placesRequired
-    )
+    decrement_competition_places(competition, placesRequired)
     bookings[(club['name'], competition['name'])] = (
         booked_places + placesRequired
     )
