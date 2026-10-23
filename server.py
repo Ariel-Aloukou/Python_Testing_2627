@@ -1,6 +1,9 @@
 import json
+import os
+import threading
 
 from datetime import datetime
+from functools import wraps
 
 from flask import (
     Flask,
@@ -19,6 +22,15 @@ COMPETITION_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 CLUBS_FILE = 'clubs.json'
 COMPETITIONS_FILE = 'competitions.json'
 BOOKINGS_FILE = 'bookings.json'
+DATA_LOCK = threading.RLock()
+
+
+def serialized(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with DATA_LOCK:
+            return func(*args, **kwargs)
+    return wrapper
 
 
 def loadClubs():
@@ -45,6 +57,13 @@ def loadBookings():
     }
 
 
+def writeJson(path, payload):
+    temporary_path = f"{path}.tmp"
+    with open(temporary_path, 'w') as file:
+        json.dump(payload, file, indent=4)
+    os.replace(temporary_path, path)
+
+
 def saveBookings():
     payload = {
         'bookings': [
@@ -56,16 +75,14 @@ def saveBookings():
             for (club_name, competition_name), places in bookings.items()
         ]
     }
-    with open(BOOKINGS_FILE, 'w') as b:
-        json.dump(payload, b, indent=4)
+    writeJson(BOOKINGS_FILE, payload)
 
 
 def saveData():
-    with open(CLUBS_FILE, 'w') as c:
-        json.dump({'clubs': clubs}, c, indent=4)
-    with open(COMPETITIONS_FILE, 'w') as comps:
-        json.dump({'competitions': competitions}, comps, indent=4)
-    saveBookings()
+    with DATA_LOCK:
+        writeJson(CLUBS_FILE, {'clubs': clubs})
+        writeJson(COMPETITIONS_FILE, {'competitions': competitions})
+        saveBookings()
 
 
 def normalize_email(email):
@@ -237,6 +254,7 @@ def book(competition, club):
 
 
 @app.route('/purchasePlaces', methods=['POST'])
+@serialized
 def purchasePlaces():
     club = get_logged_in_club()
     if club is None:
