@@ -44,6 +44,11 @@ def get_booked_places(club_name, competition_name):
     return bookings.get((club_name, competition_name), 0)
 
 
+def decrement_competition_places(competition, places):
+    remaining_places = int(competition['numberOfPlaces']) - places
+    competition['numberOfPlaces'] = max(0, remaining_places)
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
@@ -123,9 +128,7 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
-    competition['numberOfPlaces'] = (
-        int(competition['numberOfPlaces']) - placesRequired
-    )
+    decrement_competition_places(competition, placesRequired)
     bookings[(club['name'], competition['name'])] = (
         booked_places + placesRequired
     )
