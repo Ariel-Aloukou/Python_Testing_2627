@@ -15,9 +15,16 @@ def loadCompetitions():
         return listOfCompetitions
 
 
+def normalize_email(email):
+    return str(email or '').strip().lower()
+
+
 def find_club_by_email(email):
+    normalized_email = normalize_email(email)
+    if not normalized_email:
+        return None
     for club in clubs:
-        if club.get('email') == email:
+        if normalize_email(club.get('email')) == normalized_email:
             return club
     return None
 
@@ -40,13 +47,14 @@ def showSummary():
     club = find_club_by_email(email)
 
     if club is None:
-        return render_template(
-            'index.html',
-            error=(
+        if not normalize_email(email):
+            error = "Veuillez saisir une adresse email."
+        else:
+            error = (
                 "Adresse email inconnue. "
                 "Vérifiez votre adresse et réessayez."
-            ),
-        )
+            )
+        return render_template('index.html', error=error)
 
     return render_template('welcome.html', club=club, competitions=competitions)
 
