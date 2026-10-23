@@ -3,8 +3,8 @@ import re
 import server
 
 
-def test_past_competition_cannot_be_booked(client):
-    response = client.post(
+def test_past_competition_cannot_be_booked(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Past Festival",
@@ -24,8 +24,8 @@ def test_past_competition_cannot_be_booked(client):
     ) == 0
 
 
-def test_past_competition_is_visible_but_not_bookable(client):
-    response = client.post(
+def test_past_competition_is_visible_but_not_bookable(simply_lift_client):
+    response = simply_lift_client.post(
         "/showSummary",
         data={"email": "john@simplylift.co"},
     )
@@ -39,8 +39,8 @@ def test_past_competition_is_visible_but_not_bookable(client):
     assert "Book Places" not in past_block.group(0)
 
 
-def test_booking_page_is_refused_for_past_competition(client):
-    response = client.get("/book/Past%20Festival/Simply%20Lift")
+def test_booking_page_is_refused_for_past_competition(simply_lift_client):
+    response = simply_lift_client.get("/book/Past%20Festival/Simply%20Lift")
 
     assert response.status_code == 200
     html = response.get_data(as_text=True)

@@ -1,15 +1,15 @@
 import server
 
 
-def test_booking_form_limits_places_to_12(client):
-    response = client.get("/book/Spring%20Festival/Simply%20Lift")
+def test_booking_form_limits_places_to_12(simply_lift_client):
+    response = simply_lift_client.get("/book/Spring%20Festival/Simply%20Lift")
 
     assert response.status_code == 200
     assert b'max="12"' in response.data
 
 
-def test_booking_more_than_12_places_is_refused_by_server(client):
-    response = client.post(
+def test_booking_more_than_12_places_is_refused_by_server(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -24,8 +24,8 @@ def test_booking_more_than_12_places_is_refused_by_server(client):
     assert server.competitions[0]["numberOfPlaces"] == "25"
 
 
-def test_booking_exactly_12_places_is_accepted(client):
-    response = client.post(
+def test_booking_exactly_12_places_is_accepted(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -39,8 +39,8 @@ def test_booking_exactly_12_places_is_accepted(client):
     assert server.competitions[0]["numberOfPlaces"] == 13
 
 
-def test_booking_limit_is_cumulative_for_a_club_and_competition(client):
-    first = client.post(
+def test_booking_limit_is_cumulative_for_a_club_and_competition(simply_lift_client):
+    first = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -48,7 +48,7 @@ def test_booking_limit_is_cumulative_for_a_club_and_competition(client):
             "places": "6",
         },
     )
-    second = client.post(
+    second = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -56,7 +56,7 @@ def test_booking_limit_is_cumulative_for_a_club_and_competition(client):
             "places": "6",
         },
     )
-    third = client.post(
+    third = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -77,8 +77,8 @@ def test_booking_limit_is_cumulative_for_a_club_and_competition(client):
     ) == 12
 
 
-def test_refused_cumulative_booking_is_not_recorded(client):
-    client.post(
+def test_refused_cumulative_booking_is_not_recorded(simply_lift_client):
+    simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -87,7 +87,7 @@ def test_refused_cumulative_booking_is_not_recorded(client):
         },
     )
 
-    refused = client.post(
+    refused = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -105,7 +105,7 @@ def test_refused_cumulative_booking_is_not_recorded(client):
         "Spring Festival",
     ) == 6
 
-    accepted = client.post(
+    accepted = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -123,8 +123,8 @@ def test_refused_cumulative_booking_is_not_recorded(client):
     ) == 12
 
 
-def test_booking_limit_is_per_club(client):
-    client.post(
+def test_booking_limit_is_per_club(simply_lift_client):
+    simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -133,7 +133,12 @@ def test_booking_limit_is_per_club(client):
         },
     )
 
-    response = client.post(
+    simply_lift_client.post(
+        "/showSummary",
+        data={"email": "admin@irontemple.com"},
+    )
+
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -149,8 +154,8 @@ def test_booking_limit_is_per_club(client):
     assert server.competitions[0]["numberOfPlaces"] == 9
 
 
-def test_booking_limit_is_per_competition(client):
-    client.post(
+def test_booking_limit_is_per_competition(simply_lift_client):
+    simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -159,7 +164,7 @@ def test_booking_limit_is_per_competition(client):
         },
     )
 
-    response = client.post(
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Fall Classic",

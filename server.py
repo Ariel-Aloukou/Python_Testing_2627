@@ -2,7 +2,15 @@ import json
 
 from datetime import datetime
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 
 MAX_PLACES_PER_COMPETITION = 12
@@ -61,6 +69,23 @@ def decrement_competition_places(competition, places):
     competition['numberOfPlaces'] = max(0, remaining_places)
 
 
+def get_logged_in_club():
+    club_name = session.get('club_name')
+    if not club_name:
+        return None
+    for club in clubs:
+        if club['name'] == club_name:
+            return club
+    return None
+
+
+def render_login_required():
+    return render_template(
+        'index.html',
+        error="Veuillez vous connecter pour accéder à cette page.",
+    ), 401
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 app.jinja_env.globals['is_competition_past'] = is_competition_past
@@ -90,12 +115,22 @@ def showSummary():
             )
         return render_template('index.html', error=error)
 
+    session['club_name'] = club['name']
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
-    foundClub = [c for c in clubs if c['name'] == club][0]
+    foundClub = get_logged_in_club()
+    if foundClub is None:
+        return render_login_required()
+    if foundClub['name'] != club:
+        flash("Accès non autorisé pour ce club.")
+        return render_template(
+            'welcome.html',
+            club=foundClub,
+            competitions=competitions,
+        ), 403
     foundCompetition = [c for c in competitions if c['name'] == competition][0]
     if is_competition_past(foundCompetition):
         flash("Cette compétition est passée.")
@@ -114,17 +149,27 @@ def book(competition, club):
         flash("Something went wrong-please try again")
         return render_template(
             'welcome.html',
-            club=club,
+            club=foundClub,
             competitions=competitions,
         )
 
 
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
+    club = get_logged_in_club()
+    if club is None:
+        return render_login_required()
+    submitted_club = request.form.get('club')
+    if submitted_club and submitted_club != club['name']:
+        flash("Accès non autorisé pour ce club.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        ), 403
     competition = [
         c for c in competitions if c['name'] == request.form['competition']
     ][0]
-    club = [c for c in clubs if c['name'] == request.form['club']][0]
     if is_competition_past(competition):
         flash("Cette compétition est passée.")
         return render_template(
