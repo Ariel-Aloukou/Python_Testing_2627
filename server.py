@@ -138,6 +138,15 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/points')
+def points():
+    sorted_clubs = sorted(
+        clubs,
+        key=lambda club: (-int(club['points']), club['name']),
+    )
+    return render_template('points.html', clubs=sorted_clubs)
+
+
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
     email = request.form.get('email', '')
