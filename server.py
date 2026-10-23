@@ -1,9 +1,12 @@
 import json
 
+from datetime import datetime
+
 from flask import Flask, flash, redirect, render_template, request, url_for
 
 
 MAX_PLACES_PER_COMPETITION = 12
+COMPETITION_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def loadClubs():
@@ -20,6 +23,15 @@ def loadCompetitions():
 
 def normalize_email(email):
     return str(email or '').strip().lower()
+
+
+def is_competition_past(competition, now=None):
+    competition_date = datetime.strptime(
+        competition['date'],
+        COMPETITION_DATE_FORMAT,
+    )
+    current_time = now or datetime.now()
+    return competition_date < current_time
 
 
 def find_club_by_email(email):
@@ -105,6 +117,13 @@ def purchasePlaces():
         c for c in competitions if c['name'] == request.form['competition']
     ][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
+    if is_competition_past(competition):
+        flash("Cette compétition est passée.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        )
     placesRequired = int(request.form['places'])
     if placesRequired < 1:
         flash("Le nombre de places doit être au moins 1.")
