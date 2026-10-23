@@ -1,0 +1,175 @@
+import server
+
+
+def test_booking_form_limits_places_to_12(client):
+    response = client.get("/book/Spring%20Festival/Simply%20Lift")
+
+    assert response.status_code == 200
+    assert b'max="12"' in response.data
+
+
+def test_booking_more_than_12_places_is_refused_by_server(client):
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "13",
+        },
+    )
+
+    assert response.status_code == 200
+    assert b"limite de 12 places" in response.data
+    assert server.clubs[0]["points"] == "13"
+    assert server.competitions[0]["numberOfPlaces"] == "25"
+
+
+def test_booking_exactly_12_places_is_accepted(client):
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "12",
+        },
+    )
+
+    assert response.status_code == 200
+    assert server.clubs[0]["points"] == "1"
+    assert server.competitions[0]["numberOfPlaces"] == 13
+
+
+def test_booking_limit_is_cumulative_for_a_club_and_competition(client):
+    first = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "6",
+        },
+    )
+    second = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "6",
+        },
+    )
+    third = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "1",
+        },
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert third.status_code == 200
+    assert b"limite de 12 places" in third.data
+    assert server.clubs[0]["points"] == "1"
+    assert server.competitions[0]["numberOfPlaces"] == 13
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Spring Festival",
+    ) == 12
+
+
+def test_refused_cumulative_booking_is_not_recorded(client):
+    client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "6",
+        },
+    )
+
+    refused = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "7",
+        },
+    )
+
+    assert refused.status_code == 200
+    assert b"limite de 12 places" in refused.data
+    assert server.clubs[0]["points"] == "7"
+    assert server.competitions[0]["numberOfPlaces"] == 19
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Spring Festival",
+    ) == 6
+
+    accepted = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "6",
+        },
+    )
+
+    assert accepted.status_code == 200
+    assert server.clubs[0]["points"] == "1"
+    assert server.competitions[0]["numberOfPlaces"] == 13
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Spring Festival",
+    ) == 12
+
+
+def test_booking_limit_is_per_club(client):
+    client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "12",
+        },
+    )
+
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Iron Temple",
+            "places": "4",
+        },
+    )
+
+    assert response.status_code == 200
+    assert b"limite de 12 places" not in response.data
+    assert server.clubs[0]["points"] == "1"
+    assert server.clubs[1]["points"] == "0"
+    assert server.competitions[0]["numberOfPlaces"] == 9
+
+
+def test_booking_limit_is_per_competition(client):
+    client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "12",
+        },
+    )
+
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Fall Classic",
+            "club": "Simply Lift",
+            "places": "1",
+        },
+    )
+
+    assert response.status_code == 200
+    assert b"limite de 12 places" not in response.data
+    assert server.clubs[0]["points"] == "0"
+    assert server.competitions[0]["numberOfPlaces"] == 13
+    assert server.competitions[1]["numberOfPlaces"] == 12

@@ -57,6 +57,7 @@ def sample_competitions():
 def app(monkeypatch, sample_clubs, sample_competitions):
     monkeypatch.setattr(server_module, "clubs", sample_clubs)
     monkeypatch.setattr(server_module, "competitions", sample_competitions)
+    monkeypatch.setattr(server_module, "bookings", {})
     server_module.app.config.update(
         TESTING=True,
         SECRET_KEY="test-secret-key",
