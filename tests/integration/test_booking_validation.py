@@ -103,3 +103,16 @@ def test_zero_places_are_refused(simply_lift_client):
         "Simply Lift",
         "Spring Festival",
     ) == 0
+
+
+def test_booking_form_has_native_validation(simply_lift_client):
+    response = simply_lift_client.get(
+        "/book/Spring%20Festival/Simply%20Lift"
+    )
+
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert 'min="1"' in html
+    assert 'max="12"' in html
+    assert 'step="1"' in html
+    assert "required" in html
