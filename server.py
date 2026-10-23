@@ -4,6 +4,7 @@ from datetime import datetime
 
 from flask import (
     Flask,
+    abort,
     flash,
     redirect,
     render_template,
@@ -49,6 +50,20 @@ def find_club_by_email(email):
     for club in clubs:
         if normalize_email(club.get('email')) == normalized_email:
             return club
+    return None
+
+
+def find_club_by_name(club_name):
+    for club in clubs:
+        if club['name'] == club_name:
+            return club
+    return None
+
+
+def find_competition_by_name(competition_name):
+    for competition in competitions:
+        if competition['name'] == competition_name:
+            return competition
     return None
 
 
@@ -121,17 +136,22 @@ def showSummary():
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
-    foundClub = get_logged_in_club()
+    foundClub = find_club_by_name(club)
     if foundClub is None:
+        abort(404)
+    foundCompetition = find_competition_by_name(competition)
+    if foundCompetition is None:
+        abort(404)
+    logged_in_club = get_logged_in_club()
+    if logged_in_club is None:
         return render_login_required()
-    if foundClub['name'] != club:
+    if logged_in_club['name'] != foundClub['name']:
         flash("Accès non autorisé pour ce club.")
         return render_template(
             'welcome.html',
-            club=foundClub,
+            club=logged_in_club,
             competitions=competitions,
         ), 403
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
     if is_competition_past(foundCompetition):
         flash("Cette compétition est passée.")
         return render_template(
@@ -139,19 +159,11 @@ def book(competition, club):
             club=foundClub,
             competitions=competitions,
         )
-    if foundClub and foundCompetition:
-        return render_template(
-            'booking.html',
-            club=foundClub,
-            competition=foundCompetition,
-        )
-    else:
-        flash("Something went wrong-please try again")
-        return render_template(
-            'welcome.html',
-            club=foundClub,
-            competitions=competitions,
-        )
+    return render_template(
+        'booking.html',
+        club=foundClub,
+        competition=foundCompetition,
+    )
 
 
 @app.route('/purchasePlaces', methods=['POST'])
@@ -167,9 +179,11 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         ), 403
-    competition = [
-        c for c in competitions if c['name'] == request.form['competition']
-    ][0]
+    competition = find_competition_by_name(
+        request.form.get('competition')
+    )
+    if competition is None:
+        abort(404)
     if is_competition_past(competition):
         flash("Cette compétition est passée.")
         return render_template(
