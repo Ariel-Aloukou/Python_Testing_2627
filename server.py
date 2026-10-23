@@ -15,6 +15,20 @@ def loadCompetitions():
         return listOfCompetitions
 
 
+def normalize_email(email):
+    return str(email or '').strip().lower()
+
+
+def find_club_by_email(email):
+    normalized_email = normalize_email(email)
+    if not normalized_email:
+        return None
+    for club in clubs:
+        if normalize_email(club.get('email')) == normalized_email:
+            return club
+    return None
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
@@ -29,7 +43,19 @@ def index():
 
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
-    club = [club for club in clubs if club['email'] == request.form['email']][0]
+    email = request.form.get('email', '')
+    club = find_club_by_email(email)
+
+    if club is None:
+        if not normalize_email(email):
+            error = "Veuillez saisir une adresse email."
+        else:
+            error = (
+                "Adresse email inconnue. "
+                "Vérifiez votre adresse et réessayez."
+            )
+        return render_template('index.html', error=error)
+
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
