@@ -17,3 +17,10 @@ def test_parse_places_refuses_zero():
         None,
         "Le nombre de places doit être au moins 1.",
     )
+
+
+def test_parse_places_refuses_non_numeric_value():
+    assert server.parse_places("deux") == (
+        None,
+        "Le nombre de places doit être un nombre entier.",
+    )

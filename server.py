@@ -68,7 +68,10 @@ def find_competition_by_name(competition_name):
 
 
 def parse_places(value):
-    places = int(value)
+    try:
+        places = int(value)
+    except (TypeError, ValueError):
+        return None, "Le nombre de places doit être un nombre entier."
     if places < 1:
         return None, "Le nombre de places doit être au moins 1."
     return places, None
