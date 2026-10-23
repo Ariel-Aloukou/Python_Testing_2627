@@ -40,11 +40,16 @@ def debit_club_points(club, places):
     return True
 
 
+def get_booked_places(club_name, competition_name):
+    return bookings.get((club_name, competition_name), 0)
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
 competitions = loadCompetitions()
 clubs = loadClubs()
+bookings = {}
 
 
 @app.route('/')
@@ -96,7 +101,8 @@ def purchasePlaces():
     ][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
-    if placesRequired > MAX_PLACES_PER_COMPETITION:
+    booked_places = get_booked_places(club['name'], competition['name'])
+    if booked_places + placesRequired > MAX_PLACES_PER_COMPETITION:
         flash("La limite de 12 places par compétition est dépassée.")
         return render_template(
             'welcome.html',
@@ -112,6 +118,9 @@ def purchasePlaces():
         )
     competition['numberOfPlaces'] = (
         int(competition['numberOfPlaces']) - placesRequired
+    )
+    bookings[(club['name'], competition['name'])] = (
+        booked_places + placesRequired
     )
     flash('Great-booking complete!')
     return render_template(
