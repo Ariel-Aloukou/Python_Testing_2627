@@ -40,6 +40,11 @@ SAMPLE_COMPETITIONS = [
         "date": "2030-10-22 13:30:00",
         "numberOfPlaces": "13",
     },
+    {
+        "name": "Small Festival",
+        "date": "2030-05-01 10:00:00",
+        "numberOfPlaces": "5",
+    },
 ]
 
 

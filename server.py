@@ -116,6 +116,13 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         )
+    if placesRequired > int(competition['numberOfPlaces']):
+        flash("Capacité insuffisante pour cette réservation.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        )
     competition['numberOfPlaces'] = (
         int(competition['numberOfPlaces']) - placesRequired
     )
