@@ -24,3 +24,14 @@ def test_parse_places_refuses_non_numeric_value():
         None,
         "Le nombre de places doit être un nombre entier.",
     )
+
+
+def test_parse_places_accepts_maximum_value():
+    assert server.parse_places("12") == (12, None)
+
+
+def test_parse_places_refuses_more_than_12():
+    assert server.parse_places("13") == (
+        None,
+        "La limite de 12 places par compétition est dépassée.",
+    )

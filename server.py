@@ -74,6 +74,11 @@ def parse_places(value):
         return None, "Le nombre de places doit être un nombre entier."
     if places < 1:
         return None, "Le nombre de places doit être au moins 1."
+    if places > MAX_PLACES_PER_COMPETITION:
+        return None, (
+            f"La limite de {MAX_PLACES_PER_COMPETITION} places "
+            "par compétition est dépassée."
+        )
     return places, None
 
 
