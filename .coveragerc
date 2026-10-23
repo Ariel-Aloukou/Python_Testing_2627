@@ -1,0 +1,9 @@
+[run]
+source = server
+branch = True
+omit =
+    tests/*
+
+[report]
+show_missing = True
+skip_covered = True

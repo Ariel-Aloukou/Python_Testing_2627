@@ -2,6 +2,15 @@ bin
 include
 lib
 .Python
-tests/
 .envrc
 __pycache__
+Scripts/
+CACHEDIR.TAG
+pyvenv.cfg
+Spécifications+fonctionnelles.md
+.pytest_cache/
+.coverage
+htmlcov/
+*.pyc
+.venv/
+venv/
