@@ -78,3 +78,21 @@ def app(monkeypatch, sample_clubs, sample_competitions):
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def simply_lift_client(client):
+    client.post(
+        "/showSummary",
+        data={"email": "john@simplylift.co"},
+    )
+    return client
+
+
+@pytest.fixture
+def iron_temple_client(client):
+    client.post(
+        "/showSummary",
+        data={"email": "admin@irontemple.com"},
+    )
+    return client

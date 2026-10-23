@@ -1,8 +1,8 @@
 import server
 
 
-def test_booking_debits_club_points(client):
-    response = client.post(
+def test_booking_debits_club_points(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -16,8 +16,8 @@ def test_booking_debits_club_points(client):
     assert server.competitions[0]["numberOfPlaces"] == 23
 
 
-def test_booking_with_insufficient_points_is_refused(client):
-    response = client.post(
+def test_booking_with_insufficient_points_is_refused(iron_temple_client):
+    response = iron_temple_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -32,8 +32,8 @@ def test_booking_with_insufficient_points_is_refused(client):
     assert server.competitions[0]["numberOfPlaces"] == "25"
 
 
-def test_booking_updates_points_on_welcome_page(client):
-    response = client.post(
+def test_booking_updates_points_on_welcome_page(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -46,8 +46,8 @@ def test_booking_updates_points_on_welcome_page(client):
     assert b"Points available: 11" in response.data
 
 
-def test_points_remain_updated_on_next_login(client):
-    client.post(
+def test_points_remain_updated_on_next_login(simply_lift_client):
+    simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -56,7 +56,7 @@ def test_points_remain_updated_on_next_login(client):
         },
     )
 
-    response = client.post(
+    response = simply_lift_client.post(
         "/showSummary",
         data={"email": "john@simplylift.co"},
     )

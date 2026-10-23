@@ -1,8 +1,8 @@
 import server
 
 
-def test_booking_more_than_remaining_places_is_refused(client):
-    response = client.post(
+def test_booking_more_than_remaining_places_is_refused(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Small Festival",
@@ -18,8 +18,8 @@ def test_booking_more_than_remaining_places_is_refused(client):
     assert server.competitions[2]["numberOfPlaces"] == "5"
 
 
-def test_booking_all_remaining_places_leaves_zero(client):
-    response = client.post(
+def test_booking_all_remaining_places_leaves_zero(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Small Festival",
@@ -32,8 +32,8 @@ def test_booking_all_remaining_places_leaves_zero(client):
     assert server.competitions[2]["numberOfPlaces"] == 0
 
 
-def test_negative_places_are_refused(client):
-    response = client.post(
+def test_negative_places_are_refused(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Spring Festival",
@@ -53,8 +53,8 @@ def test_negative_places_are_refused(client):
     ) == 0
 
 
-def test_capacity_is_validated_before_points_are_debited(client):
-    response = client.post(
+def test_capacity_is_validated_before_points_are_debited(simply_lift_client):
+    response = simply_lift_client.post(
         "/purchasePlaces",
         data={
             "competition": "Small Festival",
