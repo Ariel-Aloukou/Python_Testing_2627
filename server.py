@@ -60,6 +60,13 @@ def find_club_by_name(club_name):
     return None
 
 
+def find_competition_by_name(competition_name):
+    for competition in competitions:
+        if competition['name'] == competition_name:
+            return competition
+    return None
+
+
 def debit_club_points(club, places):
     current_points = int(club['points'])
     if current_points < places:
@@ -132,7 +139,9 @@ def book(competition, club):
     foundClub = find_club_by_name(club)
     if foundClub is None:
         abort(404)
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
+    foundCompetition = find_competition_by_name(competition)
+    if foundCompetition is None:
+        abort(404)
     logged_in_club = get_logged_in_club()
     if logged_in_club is None:
         return render_login_required()
@@ -170,9 +179,11 @@ def purchasePlaces():
             club=club,
             competitions=competitions,
         ), 403
-    competition = [
-        c for c in competitions if c['name'] == request.form['competition']
-    ][0]
+    competition = find_competition_by_name(
+        request.form.get('competition')
+    )
+    if competition is None:
+        abort(404)
     if is_competition_past(competition):
         flash("Cette compétition est passée.")
         return render_template(
