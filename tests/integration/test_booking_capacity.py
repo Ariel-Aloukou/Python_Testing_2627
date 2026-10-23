@@ -30,3 +30,24 @@ def test_booking_all_remaining_places_leaves_zero(client):
 
     assert response.status_code == 200
     assert server.competitions[2]["numberOfPlaces"] == 0
+
+
+def test_negative_places_are_refused(client):
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": "Spring Festival",
+            "club": "Simply Lift",
+            "places": "-1",
+        },
+    )
+
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert "au moins 1" in html
+    assert server.clubs[0]["points"] == "13"
+    assert server.competitions[0]["numberOfPlaces"] == "25"
+    assert server.get_booked_places(
+        "Simply Lift",
+        "Spring Festival",
+    ) == 0
