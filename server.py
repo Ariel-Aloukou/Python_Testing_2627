@@ -29,6 +29,14 @@ def find_club_by_email(email):
     return None
 
 
+def debit_club_points(club, places):
+    current_points = int(club['points'])
+    if current_points < places:
+        return False
+    club['points'] = str(current_points - places)
+    return True
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
@@ -85,6 +93,13 @@ def purchasePlaces():
     ][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
+    if not debit_club_points(club, placesRequired):
+        flash("Solde de points insuffisant pour cette réservation.")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+        )
     competition['numberOfPlaces'] = (
         int(competition['numberOfPlaces']) - placesRequired
     )
