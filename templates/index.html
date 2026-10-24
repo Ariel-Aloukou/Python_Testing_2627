@@ -1,19 +1,68 @@
-﻿<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUDLFT Registration</title>
-</head>
-<body>
-    <h1>Welcome to the GUDLFT Registration Portal!</h1>
-    {% include '_messages.html' %}
-    <p>Please enter your secretary email to continue:</p>
-    <form action="{{ url_for('showSummary') }}" method="post">
-        <label for="email">Email :</label>
-        <input type="email" name="email" id="email" required autocomplete="email">
-        <button type="submit">Enter</button>
-    </form>
-    <p><a href="{{ url_for('points') }}">Voir le tableau des points</a></p>
-</body>
-</html>
+﻿{% extends "base.html" %}
+{% block title %}Connexion | GUDLFT{% endblock %}
+{% block content %}
+<div class="grid lg:grid-cols-2 gap-8 items-center">
+    <div class="space-y-6">
+        <div class="space-y-2">
+            <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">Bienvenue sur GUDLFT</h1>
+            <p class="text-base-content/70">Plateforme de réservation régionale pour les secrétaires de clubs.</p>
+        </div>
+        <div class="card bg-base-200 shadow-sm">
+            <div class="card-body space-y-4">
+                <div>
+                    <h2 class="card-title text-xl">Connexion</h2>
+                    <p class="text-sm text-base-content/70">Saisissez l'adresse email de votre secrétaire pour accéder à votre tableau de bord.</p>
+                </div>
+                <form action="{{ url_for('showSummary') }}" method="post" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label" for="email">
+                            <span class="label-text">Adresse email</span>
+                        </label>
+                        <input type="email" name="email" id="email" required autocomplete="email" class="input input-bordered w-full" placeholder="secretaire@club.fr">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Se connecter
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+            <a href="{{ url_for('points') }}" class="btn btn-ghost">
+                <i class="bi bi-bar-chart-line"></i>
+                Consulter le tableau public des points
+            </a>
+        </div>
+    </div>
+    <div class="hidden lg:flex justify-center">
+        <div class="card bg-gradient-to-br from-primary/10 to-secondary/10 shadow-sm w-full max-w-md">
+            <div class="card-body space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <i class="bi bi-trophy text-primary"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold">Transparence et équité</h3>
+                </div>
+                <ul class="space-y-2 text-sm text-base-content/80">
+                    <li class="flex items-start gap-2">
+                        <i class="bi bi-check-circle text-success mt-0.5"></i>
+                        <span>1 point = 1 place réservée</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="bi bi-check-circle text-success mt-0.5"></i>
+                        <span>Limite de 12 places par club et par compétition</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="bi bi-check-circle text-success mt-0.5"></i>
+                        <span>Compétitions passées visibles mais non réservables</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="bi bi-check-circle text-success mt-0.5"></i>
+                        <span>Tableau public des points, sans données sensibles</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
