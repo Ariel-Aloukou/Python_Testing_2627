@@ -35,7 +35,7 @@ def test_past_competition_is_visible_but_not_bookable(simply_lift_client):
     past_block = re.search(r"<li>\s*Past Festival.*?</li>", html, re.S)
 
     assert past_block is not None
-    assert "Past competition" in past_block.group(0)
+    assert "Compétition passée" in past_block.group(0)
     assert "Book Places" not in past_block.group(0)
 
 
