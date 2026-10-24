@@ -1,3 +1,9 @@
 {
-    "bookings": []
+    "bookings": [
+        {
+            "club": "Simply Lift",
+            "competition": "Spring Festival",
+            "places": 2
+        }
+    ]
 }

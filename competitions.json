@@ -2,18 +2,23 @@
     "competitions": [
         {
             "name": "Spring Festival",
-            "date": "2027-03-27 10:00:00",
-            "numberOfPlaces": "25"
+            "date": "2030-03-27 10:00:00",
+            "numberOfPlaces": 23
         },
         {
             "name": "Fall Classic",
-            "date": "2027-10-22 13:30:00",
+            "date": "2030-10-22 13:30:00",
             "numberOfPlaces": "13"
         },
         {
-            "name": "ChampionLigue",
-            "date": "2026-10-22 13:30:00",
-            "numberOfPlaces": "13"
+            "name": "Small Festival",
+            "date": "2030-05-01 10:00:00",
+            "numberOfPlaces": "5"
+        },
+        {
+            "name": "Past Festival",
+            "date": "2020-01-01 10:00:00",
+            "numberOfPlaces": "20"
         }
     ]
 }
