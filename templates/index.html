@@ -1,4 +1,5 @@
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,10 @@
 <body>
     <h1>Welcome to the GUDLFT Registration Portal!</h1>
     {% include '_messages.html' %}
-    Please enter your secretary email to continue:
-    <form action="showSummary" method="post">
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required autocomplete="email"/>
+    <p>Please enter your secretary email to continue:</p>
+    <form action="{{ url_for('showSummary') }}" method="post">
+        <label for="email">Email :</label>
+        <input type="email" name="email" id="email" required autocomplete="email">
         <button type="submit">Enter</button>
     </form>
     <p><a href="{{ url_for('points') }}">Voir le tableau des points</a></p>
