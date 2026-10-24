@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="gudlft">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GUDLFT{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --p: 221 83% 53%;
+            --pf: 221 83% 45%;
+            --pc: 210 40% 98%;
+            --s: 173 80% 40%;
+            --sf: 173 80% 32%;
+            --sc: 210 40% 98%;
+            --a: 190 95% 39%;
+            --af: 190 95% 33%;
+            --ac: 210 40% 98%;
+            --n: 215 28% 17%;
+            --nf: 217 33% 17%;
+            --nc: 210 40% 98%;
+            --b1: 210 40% 98%;
+            --b2: 0 0% 100%;
+            --b3: 214 32% 91%;
+            --bc: 215 28% 17%;
+            --su: 142 71% 45%;
+            --suc: 210 40% 98%;
+            --wa: 38 92% 50%;
+            --wac: 210 40% 98%;
+            --er: 0 72% 51%;
+            --erc: 210 40% 98%;
+        }
+        [data-theme="gudlft"] {
+            --p: 221 83% 53%;
+            --pf: 221 83% 45%;
+            --pc: 210 40% 98%;
+            --s: 173 80% 40%;
+            --sf: 173 80% 32%;
+            --sc: 210 40% 98%;
+            --a: 190 95% 39%;
+            --af: 190 95% 33%;
+            --ac: 210 40% 98%;
+            --n: 215 28% 17%;
+            --nf: 217 33% 17%;
+            --nc: 210 40% 98%;
+            --b1: 210 40% 98%;
+            --b2: 0 0% 100%;
+            --b3: 214 32% 91%;
+            --bc: 215 28% 17%;
+            --su: 142 71% 45%;
+            --suc: 210 40% 98%;
+            --wa: 38 92% 50%;
+            --wac: 210 40% 98%;
+            --er: 0 72% 51%;
+            --erc: 210 40% 98%;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <header class="bg-base-200 shadow-sm border-b border-base-300">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="{{ url_for('index') }}" class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+                    <i class="bi bi-trophy text-primary-content"></i>
+                </div>
+                <span class="text-lg md:text-xl font-semibold tracking-tight">GUDLFT</span>
+            </a>
+            <nav class="flex items-center gap-3 text-sm">
+                <a href="{{ url_for('points') }}" class="btn btn-ghost btn-sm">
+                    <i class="bi bi-bar-chart-line"></i>
+                    Tableau des points
+                </a>
+                {% if session.get('club_name') %}
+                <a href="{{ url_for('logout') }}" class="btn btn-ghost btn-sm">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Déconnexion
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+        {% include '_messages.html' %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="mt-10 border-t border-base-300">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-sm text-base-content/70 flex flex-col md:flex-row items-center justify-between gap-2">
+            <p>© {{ 2026 }} GUDLFT - Plateforme de réservation régionale</p>
+            <p class="flex items-center gap-2"><i class="bi bi-shield-check"></i> Transparence et équité entre clubs</p>
+        </div>
+    </footer>
+</body>
+</html>
