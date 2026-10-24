@@ -1,32 +1,39 @@
-﻿<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Points | GUDLFT Registration</title>
-</head>
-<body>
-    <h1>Tableau des points</h1>
+﻿{% extends "base.html" %}
+{% block title %}Tableau des points | GUDLFT{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Tableau des points</h1>
+            <p class="text-base-content/70">Classement public des clubs, trié par points décroissants.</p>
+        </div>
+        <a href="{{ url_for('index') }}" class="btn btn-ghost btn-sm">
+            <i class="bi bi-box-arrow-in-right"></i>
+            Connexion secrétaires
+        </a>
+    </div>
 
-    {% include '_messages.html' %}
-
-    <table>
-        <thead>
-            <tr>
-                <th scope="col">Club</th>
-                <th scope="col">Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for club in clubs %}
-            <tr>
-                <td>{{ club['name'] }}</td>
-                <td>{{ club['points'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <p><a href="{{ url_for('index') }}">Retour à la connexion</a></p>
-</body>
-</html>
+    <div class="card bg-base-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Club</th>
+                        <th class="text-right">Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for club in clubs %}
+                    <tr class="hover">
+                        <td class="font-medium">{{ loop.index }}</td>
+                        <td>{{ club['name'] }}</td>
+                        <td class="text-right font-semibold">{{ club['points'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
