@@ -14,8 +14,8 @@
     </div>
 
     <div class="card bg-base-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="table" border="1">
+        <div class="overflow-x-auto points-wrap">
+            <table>
                 <thead>
                     <tr>
                         <th>Club</th>
@@ -24,7 +24,7 @@
                 </thead>
                 <tbody>
                     {% for club in clubs %}
-                    <tr class="hover">
+                    <tr>
                         <td>{{ club['name'] }}</td>
                         <td class="text-right font-semibold">{{ club['points'] }}</td>
                     </tr>
@@ -34,4 +34,29 @@
         </div>
     </div>
 </div>
+<style>
+    .points-wrap table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .points-wrap thead th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .points-wrap tbody td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .points-wrap tbody tr:last-child td {
+        border-bottom: 0;
+    }
+    .points-wrap tbody tr:hover {
+        background-color: #f8fafc;
+    }
+</style>
 {% endblock %}

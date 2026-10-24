@@ -3,13 +3,14 @@
 {% block content %}
 {% if error %}
 <div class="max-w-2xl mx-auto mb-6">
-  <div role="alert" class="error alert alert-error shadow-sm">
-    <i class="bi bi-exclamation-triangle"></i>
-    <span>{{ error }}</span>
+  <div class="error">
+    <div role="alert" class="alert alert-error shadow-sm">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+    </div>
   </div>
 </div>
 {% endif %}
-<style>.error{}</style>
 <div class="grid lg:grid-cols-2 gap-8 items-center">
     <div class="space-y-6">
         <div class="space-y-2">
@@ -75,6 +76,4 @@
     </div>
 </div>
 {% endblock %}
-
-<div class="error"></div>
 
