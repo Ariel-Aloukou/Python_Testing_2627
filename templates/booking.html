@@ -1,21 +1,71 @@
-    <h2>{{competition['name']}}</h2>
-    <p><a href="{{ url_for('showSummary', email=club['email']) }}">Retour au tableau de bord</a></p>
-    {% include '_messages.html' %}
-    Places available: {{competition['numberOfPlaces']}}
-    <form action="/purchasePlaces" method="post">
-        <input type="hidden" name="club" value="{{club['name']}}">
-        <input type="hidden" name="competition" value="{{competition['name']}}">
-        <label for="places">How many places?</label>
-        <input
-            type="number"
-            name="places"
-            id="places"
-            min="1"
-            max="12"
-            step="1"
-            required
-        />
-        <button type="submit">Book</button>
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Réservation {{competition['name']}} | GUDLFT{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-sm text-base-content/70">Réservation</p>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">{{competition['name']}}</h1>
+        </div>
+        <a href="{{ url_for('showSummary', email=club['email']) }}" class="btn btn-ghost btn-sm">
+            <i class="bi bi-arrow-left"></i>
+            Retour au tableau de bord
+        </a>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+        <div class="card bg-base-200 shadow-sm">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <i class="bi bi-ticket-perforated text-primary"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-base-content/70">Places disponibles</p>
+                        <p class="text-2xl font-semibold">{{competition['numberOfPlaces']}}</p>
+                    </div>
+                </div>
+                <p class="text-sm text-base-content/70">Date : {{competition['date']}}</p>
+            </div>
+        </div>
+        <div class="card bg-base-200 shadow-sm">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                        <i class="bi bi-coin text-secondary"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-base-content/70">Points du club</p>
+                        <p class="text-2xl font-semibold">{{club['points']}}</p>
+                    </div>
+                </div>
+                <p class="text-sm text-base-content/70">1 point par place réservée</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-base-200 shadow-sm">
+        <div class="card-body space-y-4">
+            <div>
+                <h2 class="card-title text-xl">Réserver des places</h2>
+                <p class="text-sm text-base-content/70">Maximum 12 places par club et par compétition. Vous ne pouvez réserver qu'une fois cette compétition.</p>
+            </div>
+            <form action="{{ url_for('purchasePlaces') }}" method="post" class="space-y-4">
+                <input type="hidden" name="club" value="{{club['name']}}">
+                <input type="hidden" name="competition" value="{{competition['name']}}">
+                <div class="form-control">
+                    <label class="label" for="places">
+                        <span class="label-text">Nombre de places</span>
+                        <span class="label-text-alt">Entre 1 et 12</span>
+                    </label>
+                    <input type="number" name="places" id="places" min="1" max="12" step="1" required class="input input-bordered w-full" placeholder="Ex. 2">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="bi bi-check2-circle"></i>
+                    Confirmer la réservation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
