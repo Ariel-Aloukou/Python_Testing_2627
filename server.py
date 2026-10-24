@@ -34,27 +34,111 @@ def serialized(func):
 
 
 def loadClubs():
-    with open(CLUBS_FILE) as c:
-        listOfClubs = json.load(c)['clubs']
-        return listOfClubs
+    try:
+        with open(CLUBS_FILE) as c:
+            data = json.load(c)
+    except FileNotFoundError:
+        raise FileNotFoundError(
+            f"Fichier de données introuvable : {CLUBS_FILE}"
+        )
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"JSON invalide dans {CLUBS_FILE} : {exc}")
+    if not isinstance(data, dict):
+        raise ValueError(
+            "Schéma invalide pour clubs.json : attendu un objet JSON."
+        )
+    listOfClubs = data.get('clubs')
+    if not isinstance(listOfClubs, list):
+        raise ValueError(
+            "Schéma invalide pour clubs.json : 'clubs' doit être une liste."
+        )
+    for club in listOfClubs:
+        if not isinstance(club, dict):
+            raise ValueError(
+                "Schéma invalide pour clubs.json : "
+                "chaque club doit être un objet."
+            )
+        for key in ('name', 'email', 'points'):
+            if key not in club:
+                raise ValueError(
+                    f"Schéma invalide pour clubs.json : champ '{key}' manquant."
+                )
+    return listOfClubs
 
 
 def loadCompetitions():
-    with open(COMPETITIONS_FILE) as comps:
-        listOfCompetitions = json.load(comps)['competitions']
-        return listOfCompetitions
+    try:
+        with open(COMPETITIONS_FILE) as comps:
+            data = json.load(comps)
+    except FileNotFoundError:
+        raise FileNotFoundError(
+            f"Fichier de données introuvable : {COMPETITIONS_FILE}"
+        )
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"JSON invalide dans {COMPETITIONS_FILE} : {exc}"
+        )
+    if not isinstance(data, dict):
+        raise ValueError(
+            "Schéma invalide pour competitions.json : attendu un objet JSON."
+        )
+    listOfCompetitions = data.get('competitions')
+    if not isinstance(listOfCompetitions, list):
+        raise ValueError(
+            "Schéma invalide pour competitions.json : "
+            "'competitions' doit être une liste."
+        )
+    for competition in listOfCompetitions:
+        if not isinstance(competition, dict):
+            raise ValueError(
+                "Schéma invalide pour competitions.json : "
+                "chaque compétition doit être un objet."
+            )
+        for key in ('name', 'date', 'numberOfPlaces'):
+            if key not in competition:
+                raise ValueError(
+                    "Schéma invalide pour competitions.json : "
+                    f"champ '{key}' manquant."
+                )
+    return listOfCompetitions
 
 
 def loadBookings():
     try:
         with open(BOOKINGS_FILE) as b:
-            listOfBookings = json.load(b)['bookings']
+            data = json.load(b)
     except FileNotFoundError:
         return {}
-    return {
-        (booking['club'], booking['competition']): int(booking['places'])
-        for booking in listOfBookings
-    }
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"JSON invalide dans {BOOKINGS_FILE} : {exc}")
+    if not isinstance(data, dict):
+        raise ValueError(
+            "Schéma invalide pour bookings.json : attendu un objet JSON."
+        )
+    listOfBookings = data.get('bookings')
+    if listOfBookings is None:
+        return {}
+    if not isinstance(listOfBookings, list):
+        raise ValueError(
+            "Schéma invalide pour bookings.json : "
+            "'bookings' doit être une liste."
+        )
+    bookings_loaded = {}
+    for booking in listOfBookings:
+        if not isinstance(booking, dict):
+            raise ValueError(
+                "Schéma invalide pour bookings.json : "
+                "chaque réservation doit être un objet."
+            )
+        for key in ('club', 'competition', 'places'):
+            if key not in booking:
+                raise ValueError(
+                    f"Schéma invalide pour bookings.json : champ '{key}' manquant."
+                )
+        bookings_loaded[
+            (booking['club'], booking['competition'])
+        ] = int(booking['places'])
+    return bookings_loaded
 
 
 def writeJson(path, payload):
