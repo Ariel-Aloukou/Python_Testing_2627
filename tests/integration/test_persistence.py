@@ -15,7 +15,7 @@ def test_successful_booking_is_persisted(simply_lift_client):
 
     assert response.status_code == 200
     assert server.loadClubs()[0]["points"] == "11"
-    assert server.loadCompetitions()[0]["numberOfPlaces"] == 23
+    assert server.loadCompetitions()[0]["numberOfPlaces"] == "23"
     assert server.loadBookings() == {
         ("Simply Lift", "Spring Festival"): 2,
     }
@@ -54,4 +54,4 @@ def test_saved_booking_can_be_reloaded_from_json(
         ("Simply Lift", "Spring Festival"): 2,
     }
     assert server.loadClubs()[0]["points"] == "11"
-    assert server.loadCompetitions()[0]["numberOfPlaces"] == 23
+    assert server.loadCompetitions()[0]["numberOfPlaces"] == "23"
