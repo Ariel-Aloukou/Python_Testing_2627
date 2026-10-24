@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Réservation {{competition['name']}} | GUDLFT{% endblock %}
+{% block title %}Booking for {{competition['name']}} || GUDLFT{% endblock %}
 {% block content %}
 <div class="max-w-2xl mx-auto space-y-6">
     <div class="flex items-center justify-between">
@@ -21,7 +21,7 @@
                         <i class="bi bi-ticket-perforated text-primary"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-base-content/70">Places disponibles</p>
+                        <p class="text-sm text-base-content/70">Places available</p>
                         <p class="text-2xl font-semibold">{{competition['numberOfPlaces']}}</p>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                         <p class="text-2xl font-semibold">{{club['points']}}</p>
                     </div>
                 </div>
-                <p class="text-sm text-base-content/70">1 point par place réservée</p>
+                <p class="text-sm text-base-content/70">1 point = 1 place</p>
             </div>
         </div>
     </div>
@@ -48,21 +48,21 @@
         <div class="card-body space-y-4">
             <div>
                 <h2 class="card-title text-xl">Réserver des places</h2>
-                <p class="text-sm text-base-content/70">Maximum 12 places par club et par compétition. Vous ne pouvez réserver qu'une fois cette compétition.</p>
+                <p class="text-sm text-base-content/70">Limite de 12 places par compétition.</p>
             </div>
             <form action="{{ url_for('purchasePlaces') }}" method="post" class="space-y-4">
                 <input type="hidden" name="club" value="{{club['name']}}">
                 <input type="hidden" name="competition" value="{{competition['name']}}">
                 <div class="form-control">
                     <label class="label" for="places">
-                        <span class="label-text">Nombre de places</span>
+                        <span class="label-text">How many places?</span>
                         <span class="label-text-alt">Entre 1 et 12</span>
                     </label>
                     <input type="number" name="places" id="places" min="1" max="12" step="1" required class="input input-bordered w-full" placeholder="Ex. 2">
                 </div>
                 <button type="submit" class="btn btn-primary w-full">
                     <i class="bi bi-check2-circle"></i>
-                    Confirmer la réservation
+                    Book
                 </button>
             </form>
         </div>

@@ -1,5 +1,5 @@
 ﻿{% extends "base.html" %}
-{% block title %}Tableau des points | GUDLFT{% endblock %}
+{% block title %}Points | GUDLFT Registration{% endblock %}
 {% block content %}
 <div class="space-y-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -9,7 +9,7 @@
         </div>
         <a href="{{ url_for('index') }}" class="btn btn-ghost btn-sm">
             <i class="bi bi-box-arrow-in-right"></i>
-            Connexion secrétaires
+            Retour à la connexion
         </a>
     </div>
 
@@ -18,7 +18,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Rang</th>
                         <th>Club</th>
                         <th class="text-right">Points</th>
                     </tr>
@@ -26,7 +25,6 @@
                 <tbody>
                     {% for club in clubs %}
                     <tr class="hover">
-                        <td class="font-medium">{{ loop.index }}</td>
                         <td>{{ club['name'] }}</td>
                         <td class="text-right font-semibold">{{ club['points'] }}</td>
                     </tr>

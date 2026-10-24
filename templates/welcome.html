@@ -4,17 +4,17 @@
 <div class="space-y-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Bienvenue, {{club['email']}}</h1>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Welcome, {{club['email']}} </h1>
             <p class="text-base-content/70">Gérez vos réservations et consultez vos points.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <a href="{{ url_for('points') }}" class="btn btn-ghost btn-sm">
                 <i class="bi bi-bar-chart-line"></i>
-                Tableau des points
+                Voir le tableau des points
             </a>
             <a href="{{ url_for('logout') }}" class="btn btn-ghost btn-sm">
                 <i class="bi bi-box-arrow-right"></i>
-                Déconnexion
+                Logout
             </a>
         </div>
     </div>
@@ -27,7 +27,7 @@
                         <i class="bi bi-coin text-primary"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-base-content/70">Points disponibles</p>
+                        <p class="text-sm text-base-content/70">Points available: {{club['points']}}</p>
                         <p class="text-2xl font-semibold">{{club['points']}}</p>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
 
     <div class="space-y-4">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl md:text-2xl font-semibold">Compétitions</h2>
+            <h2 class="text-xl md:text-2xl font-semibold">Competitions:</h2>
             <p class="text-sm text-base-content/70">Sélectionnez une compétition disponible pour réserver</p>
         </div>
         <div class="grid md:grid-cols-2 gap-4">
@@ -64,7 +64,7 @@
                             <h3 class="card-title">{{comp['name']}}</h3>
                             <p class="text-sm text-base-content/70 flex items-center gap-2 mt-1">
                                 <i class="bi bi-clock"></i>
-                                {{comp['date']}}
+                                Date: {{comp['date']}}
                             </p>
                         </div>
                         {% if comp['numberOfPlaces']|int > 0 and not is_competition_past(comp) %}
@@ -76,11 +76,11 @@
                         {% endif %}
                     </div>
                     <div class="flex items-center justify-between">
-                        <p class="text-sm">Places disponibles : <span class="font-medium">{{comp['numberOfPlaces']}}</span></p>
+                        <p class="text-sm">Number of Places: <span class="font-medium">{{comp['numberOfPlaces']}}</span></p>
                         {% if comp['numberOfPlaces']|int > 0 and not is_competition_past(comp) %}
                         <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}" class="btn btn-primary btn-sm">
                             <i class="bi bi-ticket-perforated"></i>
-                            Réserver des places
+                            Book Places
                         </a>
                         {% elif is_competition_past(comp) %}
                         <span class="text-sm text-base-content/60">Compétition passée</span>
