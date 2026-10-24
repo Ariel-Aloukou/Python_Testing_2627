@@ -1,13 +1,29 @@
-﻿<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erreur serveur | GUDLFT</title>
-</head>
-<body>
-    <h1>Erreur 500</h1>
-    <p>Une erreur interne s'est produite.</p>
-    <p><a href="{{ url_for('index') }}">Retour à l'accueil</a></p>
-</body>
-</html>
+﻿{% extends "base.html" %}
+{% block title %}Erreur serveur | GUDLFT{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto text-center space-y-6">
+    <div class="card bg-base-200 shadow-sm">
+        <div class="card-body space-y-4">
+            <div class="flex justify-center">
+                <div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center">
+                    <i class="bi bi-bug text-error text-2xl"></i>
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-semibold">Erreur 500</h1>
+                <p class="text-base-content/70 mt-2">Une erreur interne s'est produite.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-house"></i>
+                    Retour à l'accueil
+                </a>
+                <a href="{{ url_for('points') }}" class="btn btn-ghost">
+                    <i class="bi bi-bar-chart-line"></i>
+                    Tableau des points
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
