@@ -302,9 +302,9 @@ def points():
     return render_template('points.html', clubs=sorted_clubs)
 
 
-@app.route('/showSummary', methods=['POST'])
+@app.route('/showSummary', methods=['POST', 'GET'])
 def showSummary():
-    email = request.form.get('email', '')
+    email = request.form.get('email', '') or request.args.get('email', '')
     club = find_club_by_email(email)
 
     if club is None:
