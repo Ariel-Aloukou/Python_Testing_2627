@@ -63,6 +63,14 @@ def loadClubs():
                 raise ValueError(
                     f"Schéma invalide pour clubs.json : champ '{key}' manquant."
                 )
+        try:
+            points = int(club['points'])
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Schéma invalide pour clubs.json : "
+                "'points' doit être un entier."
+            )
+        club['points'] = str(points)
     return listOfClubs
 
 
@@ -100,6 +108,14 @@ def loadCompetitions():
                     "Schéma invalide pour competitions.json : "
                     f"champ '{key}' manquant."
                 )
+        try:
+            places = int(competition['numberOfPlaces'])
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Schéma invalide pour competitions.json : "
+                "'numberOfPlaces' doit être un entier."
+            )
+        competition['numberOfPlaces'] = str(places)
     return listOfCompetitions
 
 
