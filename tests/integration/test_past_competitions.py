@@ -32,7 +32,13 @@ def test_past_competition_is_visible_but_not_bookable(simply_lift_client):
 
     assert response.status_code == 200
     html = response.get_data(as_text=True)
-    past_block = re.search(r"<li>\s*Past Festival.*?</li>", html, re.S)
+    # Find the li element that contains Past Festival
+    for match in re.finditer(r"<li[^>]*>.*?</li>", html, re.S):
+        if "Past Festival" in match.group(0):
+            past_block = match
+            break
+    else:
+        past_block = None
 
     assert past_block is not None
     assert "Compétition passée" in past_block.group(0)

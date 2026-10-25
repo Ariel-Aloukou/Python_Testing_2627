@@ -69,10 +69,12 @@
                 <span class="text-lg md:text-xl font-semibold tracking-tight">GUDLFT</span>
             </a>
             <nav class="flex items-center gap-3 text-sm">
+                {% if request.endpoint != 'points' %}
                 <a href="{{ url_for('points') }}" class="btn btn-ghost btn-sm">
                     <i class="bi bi-bar-chart-line"></i>
                     Tableau des points
                 </a>
+                {% endif %}
                 {% if session.get('club_name') %}
                 <a href="{{ url_for('logout') }}" class="btn btn-ghost btn-sm">
                     <i class="bi bi-box-arrow-right"></i>

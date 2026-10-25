@@ -4,7 +4,7 @@
 {% if error %}
 <div class="max-w-2xl mx-auto mb-6">
   <div class="error">
-    <div role="alert" class="alert alert-error shadow-sm">
+    <div role="alert" class="alert alert-error shadow-sm" style="background-color: #fee2e2; border: 1px solid #dc2626; color: #991b1b;">
       <i class="bi bi-exclamation-triangle"></i>
       <span>{{ error }}</span>
     </div>
@@ -21,18 +21,18 @@
             <div class="card-body space-y-4">
                 <div>
                     <h2 class="card-title text-xl">Connexion</h2>
-                    <p class="text-sm text-base-content/70">Please enter your secretary email to continue:</p>
+                    <p class="text-sm text-base-content/70">Veuillez saisir l'adresse e-mail du secrétaire pour continuer :</p>
                 </div>
                 <form action="{{ url_for('showSummary') }}" method="post" class="space-y-4">
                     <div class="form-control">
                         <label class="label" for="email">
-                            <span class="label-text">Email:</span>
+                            <span class="label-text">E-mail :</span>
                         </label>
                         <input type="email" name="email" id="email" required autocomplete="email" class="input input-bordered w-full" placeholder="secretaire@club.fr">
                     </div>
                     <button type="submit" class="btn btn-primary w-full">
                         <i class="bi bi-box-arrow-in-right"></i>
-                        Enter
+                        Se connecter
                     </button>
                 </form>
             </div>

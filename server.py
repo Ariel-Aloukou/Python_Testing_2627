@@ -307,6 +307,9 @@ def showSummary():
     email = request.form.get('email', '') or request.args.get('email', '')
     club = find_club_by_email(email)
 
+    if club is None and session.get('club_name'):
+        club = find_club_by_name(session.get('club_name'))
+
     if club is None:
         if not normalize_email(email):
             error = "Veuillez saisir une adresse email."
